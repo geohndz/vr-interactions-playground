@@ -55,6 +55,24 @@
     cursor: pointer;
   }
 
+  .mode-button:hover {
+    background-color: #e4e4e7;
+  }
+
+  .mode-button:active {
+    background-color: #d4d4d8;
+    transform: scale(0.98);
+  }
+
+  .mode-button.secondary:hover {
+    background-color: #3f3f46;
+  }
+
+  .mode-button.secondary:active {
+    background-color: #52525b;
+    transform: scale(0.98);
+  }
+
   .mode-button.secondary {
     background-color: #27272a;
     color: #fafafa;

@@ -6,9 +6,27 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <title>_scaffold</title>
+    <title>VR Interactions Playground</title>
+    <style>
+      html,
+      body,
+      #scene-container {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+      }
+
+      canvas {
+        display: block;
+        touch-action: none;
+      }
+    </style>
   </head>
-  <body style="margin: 0">
+  <body>
     <div id="scene-container"></div>
     <script type="module" src="/src/index.ts"></script>
   </body>

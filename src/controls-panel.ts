@@ -1,8 +1,8 @@
 import {
-  Color,
   Entity,
   PanelDocument,
   PanelUI,
+  PokeInteractable,
   RayInteractable,
   ScreenSpace,
   SessionMode,
@@ -26,6 +26,28 @@ import { resetSpherePosition } from "./sphere.js";
 import { sphereInteractionState } from "./sphere-feedback.js";
 
 const PANEL_CONFIG = "./ui/controls-panel.json";
+
+function disablePointerEvents(element: UIKit.Custom | UIKit.Text | null): void {
+  element?.setProperties({ pointerEvents: "none" });
+}
+
+function configureButton(
+  element: UIKit.Custom | UIKit.Text | null,
+  id: string,
+  onActivate: () => void,
+): void {
+  if (!element) return;
+
+  element.name = id;
+  element.setProperties({
+    pointerEvents: "auto",
+    pointerEventsOrder: 10,
+  });
+
+  const activate = () => onActivate();
+  element.addEventListener("click", activate);
+  element.addEventListener("pointerup", activate);
+}
 
 export class ControlsPanelSystem extends createSystem({
   controlsPanel: {
@@ -55,39 +77,55 @@ export class ControlsPanelSystem extends createSystem({
       ] as UIKitDocument;
       if (!document) return;
 
+      disablePointerEvents(document.rootElement);
+      for (const className of [
+        "heading",
+        "section-title",
+        "body-text",
+        "status-text",
+      ]) {
+        for (const element of document.getElementsByClassName(className)) {
+          disablePointerEvents(element as UIKit.Text);
+        }
+      }
+
       this.modeStatus = document.getElementById("mode-status") as UIKit.Text;
       this.interactionStatus = document.getElementById(
         "interaction-status",
       ) as UIKit.Text;
+      disablePointerEvents(this.modeStatus);
+      disablePointerEvents(this.interactionStatus);
 
-      const enterVrButton = document.getElementById(
+      configureButton(
+        document.getElementById("enter-vr-button") as UIKit.Text,
         "enter-vr-button",
-      ) as UIKit.Text;
-      const enterArButton = document.getElementById(
+        () => {
+          switchToVR(this.world, {
+            onEnter: () => this.onSessionEntered(SessionMode.ImmersiveVR),
+          });
+        },
+      );
+
+      configureButton(
+        document.getElementById("enter-ar-button") as UIKit.Text,
         "enter-ar-button",
-      ) as UIKit.Text;
-      const exitXrButton = document.getElementById(
+        () => {
+          switchToAR(this.world, {
+            onEnter: () => this.onSessionEntered(SessionMode.ImmersiveAR),
+          });
+        },
+      );
+
+      configureButton(
+        document.getElementById("exit-xr-button") as UIKit.Text,
         "exit-xr-button",
-      ) as UIKit.Text;
-
-      enterVrButton.addEventListener("click", () => {
-        switchToVR(this.world, {
-          onEnter: () => this.onSessionEntered(SessionMode.ImmersiveVR),
-        });
-      });
-
-      enterArButton.addEventListener("click", () => {
-        switchToAR(this.world, {
-          onEnter: () => this.onSessionEntered(SessionMode.ImmersiveAR),
-        });
-      });
-
-      exitXrButton.addEventListener("click", () => {
-        exitSession(this.world);
-        this.removePanelAnchor();
-        syncEnvironmentForMode(this.world, this.floorEntity);
-        this.updateStatusLabels();
-      });
+        () => {
+          exitSession(this.world);
+          this.removePanelAnchor();
+          syncEnvironmentForMode(this.world, this.floorEntity);
+          this.updateStatusLabels();
+        },
+      );
 
       this.world.visibilityState.subscribe(() => {
         syncEnvironmentForMode(this.world, this.floorEntity);
@@ -146,6 +184,7 @@ export function createControlsPanel(world: import("@iwsdk/core").World): Entity 
       maxWidth: 0.55,
     })
     .addComponent(RayInteractable)
+    .addComponent(PokeInteractable)
     .addComponent(ScreenSpace, {
       top: "16px",
       right: "16px",
@@ -153,6 +192,6 @@ export function createControlsPanel(world: import("@iwsdk/core").World): Entity 
       maxHeight: "90vh",
     });
 
-  panelEntity.object3D!.position.set(0, 1.4, -1.2);
+  panelEntity.object3D!.position.set(-0.55, 1.4, -1.1);
   return panelEntity;
 }
