@@ -1,81 +1,33 @@
 <style>
-  .toggle-root {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .exit-button {
+    width: 4.4;
+    height: 4.4;
     padding: 0.6;
     background-color: #18181b;
-    border-color: #3f3f46;
-    border-width: 0.12;
-    border-radius: 2;
-    opacity: 0.92;
-  }
-
-  .icon-button {
-    width: 4.2;
-    height: 4.2;
-    padding: 0.5;
-    background-color: #27272a;
     border-color: #52525b;
-    border-width: 0.1;
-    border-radius: 1.4;
+    border-width: 0.12;
+    border-radius: 1.6;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fafafa;
+    opacity: 0.94;
   }
 
-  .icon-button:hover {
-    background-color: #3f3f46;
+  .exit-button:hover {
+    background-color: #27272a;
   }
 
-  .icon-button:active {
-    background-color: #52525b;
-    transform: scale(0.96);
-  }
-
-  .icon-svg {
-    width: 2.4;
-    height: 2.4;
-    color: #fafafa;
+  .exit-icon {
+    width: 2.6;
+    height: 2.6;
   }
 </style>
 
-<div class="toggle-root">
-  <button id="enter-mxr-button" class="icon-button">
-    <svg
-      class="icon-svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-      <path d="M2 12h20" />
-    </svg>
-  </button>
-
-  <button id="exit-mxr-button" class="icon-button">
-    <svg
-      class="icon-svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M10.114 4.462A14.5 14.5 0 0 1 12 2a10 10 0 0 1 9.313 13.643" />
-      <path d="M15.557 15.556A14.5 14.5 0 0 1 12 22 10 10 0 0 1 4.929 4.929" />
-      <path d="M15.892 10.234A14.5 14.5 0 0 0 12 2a10 10 0 0 0-3.643.687" />
-      <path d="M17.656 12H22" />
-      <path d="M19.071 19.071A10 10 0 0 1 12 22 14.5 14.5 0 0 1 8.44 8.45" />
-      <path d="M2 12h10" />
-      <path d="m2 2 20 20" />
-    </svg>
-  </button>
-</div>
+<button id="exit-mxr-button" class="exit-button">
+  <img
+    class="exit-icon"
+    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fafafa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.114 4.462A14.5 14.5 0 0 1 12 2a10 10 0 0 1 9.313 13.643'/%3E%3Cpath d='M15.557 15.556A14.5 14.5 0 0 1 12 22 10 10 0 0 1 4.929 4.929'/%3E%3Cpath d='M15.892 10.234A14.5 14.5 0 0 0 12 2a10 10 0 0 0-3.643.687'/%3E%3Cpath d='M17.656 12H22'/%3E%3Cpath d='M19.071 19.071A10 10 0 0 1 12 22 14.5 14.5 0 0 1 8.44 8.45'/%3E%3Cpath d='M2 12h10'/%3E%3Cpath d='m2 2 20 20'/%3E%3C/svg%3E"
+    alt="Exit XR"
+  />
+</button>

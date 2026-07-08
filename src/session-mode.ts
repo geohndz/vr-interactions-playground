@@ -106,6 +106,39 @@ function updateXrDefaults(
   };
 }
 
+function isLocalDevHost(): boolean {
+  const host = location.hostname;
+  return host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+}
+
+export async function resolveMXRMode(): Promise<SessionMode | null> {
+  if (!navigator.xr) {
+    return null;
+  }
+
+  const vrSupported = await navigator.xr.isSessionSupported(
+    SessionMode.ImmersiveVR,
+  );
+  const arSupported = await navigator.xr.isSessionSupported(
+    SessionMode.ImmersiveAR,
+  );
+
+  // IWER on localhost emulates VR; AR requests fail with "No XR hardware found".
+  if (isLocalDevHost() && vrSupported) {
+    return SessionMode.ImmersiveVR;
+  }
+
+  if (arSupported) {
+    return SessionMode.ImmersiveAR;
+  }
+
+  if (vrSupported) {
+    return SessionMode.ImmersiveVR;
+  }
+
+  return null;
+}
+
 async function launchWhenReady(
   world: World,
   mode: SessionMode,
@@ -125,27 +158,50 @@ async function launchWhenReady(
   updateXrDefaults(world, mode, features);
 
   await new Promise<void>((resolve, reject) => {
+    let settled = false;
+
+    const finish = (result: "resolve" | "reject", error?: Error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      unsubscribe();
+      if (result === "resolve") {
+        onEnter?.();
+        resolve();
+      } else {
+        reject(error ?? new Error("XR launch failed"));
+      }
+    };
+
     const timeoutId = window.setTimeout(() => {
-      cleanup();
-      reject(new Error("XR session did not become visible"));
+      finish("reject", new Error("XR session did not become visible"));
     }, 15000);
 
-    const cleanup = world.visibilityState.subscribe((state) => {
+    const unsubscribe = world.visibilityState.subscribe((state) => {
       if (generation !== launchGeneration) {
-        clearTimeout(timeoutId);
-        cleanup();
+        finish("reject", new Error("XR launch cancelled"));
         return;
       }
 
       if (state === VisibilityState.Visible) {
-        clearTimeout(timeoutId);
-        cleanup();
-        onEnter?.();
-        resolve();
+        finish("resolve");
       }
     });
 
-    world.launchXR({ sessionMode: mode, features });
+    try {
+      const launchResult = world.launchXR({ sessionMode: mode, features });
+      Promise.resolve(launchResult).catch((error: unknown) => {
+        finish(
+          "reject",
+          error instanceof Error ? error : new Error(String(error)),
+        );
+      });
+    } catch (error) {
+      finish(
+        "reject",
+        error instanceof Error ? error : new Error(String(error)),
+      );
+    }
   });
 }
 
@@ -199,28 +255,28 @@ export function enterMXR(
   options?: { onEnter?: (mode: SessionMode) => void },
 ): void {
   void (async () => {
-    const preferAR =
-      navigator.xr &&
-      (await navigator.xr.isSessionSupported(SessionMode.ImmersiveAR));
-
-    if (preferAR) {
-      await launchWhenReady(
-        world,
-        SessionMode.ImmersiveAR,
-        AR_FEATURES,
-        () => options?.onEnter?.(SessionMode.ImmersiveAR),
+    const mode = await resolveMXRMode();
+    if (!mode) {
+      console.warn(
+        "[Playground] WebXR is not available on this browser or device.",
       );
       return;
     }
 
-    await launchWhenReady(
-      world,
-      SessionMode.ImmersiveVR,
-      VR_FEATURES,
-      () => options?.onEnter?.(SessionMode.ImmersiveVR),
-    );
+    const features = mode === SessionMode.ImmersiveAR ? AR_FEATURES : VR_FEATURES;
+    await launchWhenReady(world, mode, features, () => options?.onEnter?.(mode));
   })().catch((error) => {
-    console.error("[Playground] Failed to enter XR:", error);
+    const message =
+      error instanceof Error ? error.message : "Unknown XR launch error";
+
+    if (message.includes("No XR hardware found")) {
+      console.warn(
+        "[Playground] No XR hardware detected. On desktop, use localhost with IWER enabled.",
+      );
+      return;
+    }
+
+    console.warn("[Playground] Failed to enter XR:", message);
   });
 }
 

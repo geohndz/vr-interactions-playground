@@ -4,7 +4,7 @@ import { bootstrapPlayground } from "./playground.js";
 
 World.create(document.getElementById("scene-container") as HTMLDivElement, {
   xr: {
-    sessionMode: SessionMode.ImmersiveAR,
+    sessionMode: SessionMode.ImmersiveVR,
     offer: "none",
     features: {
       handTracking: true,

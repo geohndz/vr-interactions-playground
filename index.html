@@ -24,6 +24,44 @@
         display: block;
         touch-action: none;
       }
+
+      #xr-toggle {
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 12px;
+        background: rgba(24, 24, 27, 0.88);
+        color: #fafafa;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+
+      #xr-toggle:hover {
+        background: rgba(39, 39, 42, 0.95);
+      }
+
+      #xr-toggle:active {
+        transform: translateX(-50%) scale(0.96);
+      }
+
+      #xr-toggle svg {
+        display: block;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
