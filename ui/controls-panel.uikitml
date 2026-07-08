@@ -1,0 +1,87 @@
+<style>
+  .panel-root {
+    display: flex;
+    flex-direction: column;
+    padding: 2;
+    width: 52;
+    background-color: #09090b;
+    border-color: #27272a;
+    border-width: 0.15;
+    border-radius: 3;
+    gap: 1.2;
+  }
+
+  .heading {
+    font-size: 3.5;
+    font-weight: medium;
+    color: #fafafa;
+    text-align: left;
+  }
+
+  .section-title {
+    font-size: 2.2;
+    font-weight: medium;
+    color: #e4e4e7;
+    margin-top: 0.8;
+    text-align: left;
+  }
+
+  .body-text {
+    font-size: 1.8;
+    color: #a1a1aa;
+    text-align: left;
+    line-height: 1.4;
+  }
+
+  .status-text {
+    font-size: 2;
+    color: #4ade80;
+    text-align: left;
+    margin-top: 0.5;
+  }
+
+  .mode-button {
+    width: 100%;
+    padding: 1.4;
+    margin-top: 0.6;
+    background-color: #fafafa;
+    color: #09090b;
+    border-radius: 1.5;
+    border-width: 0.1;
+    border-color: #e4e4e7;
+    font-size: 2.2;
+    font-weight: medium;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .mode-button.secondary {
+    background-color: #27272a;
+    color: #fafafa;
+    border-color: #3f3f46;
+  }
+</style>
+
+<div class="panel-root">
+  <span class="heading">VR Interactions Playground</span>
+  <span id="mode-status" class="status-text">Mode: Browser</span>
+  <span id="interaction-status" class="status-text">Sphere: idle</span>
+
+  <span class="section-title">Session</span>
+  <button id="enter-vr-button" class="mode-button">Enter VR</button>
+  <button id="enter-ar-button" class="mode-button secondary">Enter AR</button>
+  <button id="exit-xr-button" class="mode-button secondary">Exit XR</button>
+
+  <span class="section-title">Sphere interactions</span>
+  <span class="body-text">One-hand: direct grab, move, and rotate with controller grip or hand pinch.</span>
+  <span class="body-text">Two-hand: spread or pinch hands to scale; both hands rotate the sphere.</span>
+  <span class="body-text">Distance: point and grab remotely with the ray pointer trigger.</span>
+
+  <span class="section-title">Input</span>
+  <span class="body-text">Controllers: trigger selects, grip grabs, thumbsticks move in VR.</span>
+  <span class="body-text">Hands: pinch to grab when hand tracking is available.</span>
+  <span class="body-text">Phone/desktop: tap or click the sphere before entering XR.</span>
+
+  <span class="section-title">Device testing</span>
+  <span class="body-text">Desktop: localhost uses IWER emulation. Phone/headset: use the network HTTPS URL on the same Wi-Fi.</span>
+</div>
