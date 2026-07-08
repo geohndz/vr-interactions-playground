@@ -7,6 +7,7 @@ import {
   Mesh,
   MeshStandardMaterial,
   PlaneGeometry,
+  VisibilityState,
   World,
 } from "@iwsdk/core";
 
@@ -57,8 +58,11 @@ export function bootstrapPlayground(world: World): void {
     .registerSystem(SphereFeedbackSystem)
     .registerSystem(ControlsPanelSystem);
 
-  world.visibilityState.subscribe(() => {
+  world.visibilityState.subscribe((state) => {
     syncPlaygroundModeFromWorld(world);
+    if (state === VisibilityState.NonImmersive && !world.session) {
+      syncEnvironmentForMode(world, playgroundRefs.floorEntity);
+    }
   });
 
   world.camera.position.set(0, 1.6, 0.5);

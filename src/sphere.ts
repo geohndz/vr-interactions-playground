@@ -1,11 +1,7 @@
 import {
-  DistanceGrabbable,
   Entity,
   Mesh,
   MeshStandardMaterial,
-  MovementMode,
-  OneHandGrabbable,
-  RayInteractable,
   SphereGeometry,
   TwoHandsGrabbable,
   World,
@@ -28,27 +24,18 @@ export function createSphereLab(world: World): Entity {
   const sphere = new Mesh(new SphereGeometry(SPHERE_RADIUS), material);
   sphere.position.set(0, 1.3, -0.8);
 
-  const entity = world
-    .createTransformEntity(sphere)
-    .addComponent(SphereLab)
-    .addComponent(RayInteractable)
-    .addComponent(OneHandGrabbable, {
-      translate: true,
-      rotate: true,
-    })
-    .addComponent(TwoHandsGrabbable, {
+  // IWSDK allows only one grab handle per entity. TwoHandsGrabbable supports
+  // one-hand move/rotate and two-hand scale when both hands pinch the sphere.
+  const entity = world.createTransformEntity(sphere).addComponent(SphereLab).addComponent(
+    TwoHandsGrabbable,
+    {
       translate: true,
       rotate: true,
       scale: true,
       scaleMin: [0.5, 0.5, 0.5],
       scaleMax: [2.5, 2.5, 2.5],
-    })
-    .addComponent(DistanceGrabbable, {
-      translate: true,
-      rotate: true,
-      scale: true,
-      movementMode: MovementMode.MoveTowardsTarget,
-    });
+    },
+  );
 
   return entity;
 }

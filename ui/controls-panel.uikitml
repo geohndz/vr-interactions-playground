@@ -91,9 +91,9 @@
   <button id="exit-xr-button" class="mode-button secondary">Exit XR</button>
 
   <span class="section-title">Sphere interactions</span>
-  <span class="body-text">One-hand: direct grab, move, and rotate with controller grip or hand pinch.</span>
-  <span class="body-text">Two-hand: spread or pinch hands to scale; both hands rotate the sphere.</span>
-  <span class="body-text">Distance: point and grab remotely with the ray pointer trigger.</span>
+  <span class="body-text">Two-hand scale: hold grip on both controllers (or pinch both hands), then spread or pinch apart.</span>
+  <span class="body-text">One-hand: hold a single grip near the sphere to move and rotate.</span>
+  <span class="body-text">Controllers use the side grip button, not the trigger. Trigger is for UI rays only.</span>
 
   <span class="section-title">Input</span>
   <span class="body-text">Controllers: trigger selects, grip grabs, thumbsticks move in VR.</span>

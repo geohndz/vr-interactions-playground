@@ -22,10 +22,15 @@ const AR_FEATURES = {
 const VR_FEATURES = {
   handTracking: true,
   layers: true,
+  anchors: false,
+  hitTest: false,
+  planeDetection: false,
+  meshDetection: false,
 } as const;
 
 let currentMode: PlaygroundMode = "browser";
 let pendingMode: PlaygroundMode | null = null;
+let launchGeneration = 0;
 
 export function getPlaygroundMode(): PlaygroundMode {
   return currentMode;
@@ -58,28 +63,90 @@ function waitForSessionEnd(world: World): Promise<void> {
   });
 }
 
+async function ensureSessionClear(world: World): Promise<void> {
+  if (world.session) {
+    await waitForSessionEnd(world);
+  }
+
+  await new Promise<void>((resolve) => {
+    let frames = 0;
+    const wait = () => {
+      frames += 1;
+      const presenting = world.renderer.xr.isPresenting;
+      const hasSession = Boolean(world.session);
+
+      if (!presenting && !hasSession && frames > 2) {
+        resolve();
+        return;
+      }
+
+      if (frames > 180) {
+        console.warn(
+          "[Playground] Timed out waiting for XR teardown; attempting relaunch anyway.",
+        );
+        resolve();
+        return;
+      }
+
+      requestAnimationFrame(wait);
+    };
+    wait();
+  });
+}
+
+function updateXrDefaults(
+  world: World,
+  mode: SessionMode,
+  features: typeof AR_FEATURES | typeof VR_FEATURES,
+): void {
+  world.xrDefaults = {
+    sessionMode: mode,
+    features: { ...features },
+    restoreCameraOnExit: true,
+  };
+}
+
 async function launchWhenReady(
   world: World,
   mode: SessionMode,
   features: typeof AR_FEATURES | typeof VR_FEATURES,
   onEnter?: () => void,
 ): Promise<void> {
-  if (world.session) {
-    pendingMode = mode;
-    await waitForSessionEnd(world);
+  const generation = ++launchGeneration;
+
+  await ensureSessionClear(world);
+
+  if (generation !== launchGeneration) {
+    return;
   }
 
   currentMode = mode;
   pendingMode = null;
+  updateXrDefaults(world, mode, features);
 
-  const unsubscribe = world.visibilityState.subscribe((state) => {
-    if (state === VisibilityState.Visible) {
-      unsubscribe();
-      onEnter?.();
-    }
+  await new Promise<void>((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("XR session did not become visible"));
+    }, 15000);
+
+    const cleanup = world.visibilityState.subscribe((state) => {
+      if (generation !== launchGeneration) {
+        clearTimeout(timeoutId);
+        cleanup();
+        return;
+      }
+
+      if (state === VisibilityState.Visible) {
+        clearTimeout(timeoutId);
+        cleanup();
+        onEnter?.();
+        resolve();
+      }
+    });
+
+    world.launchXR({ sessionMode: mode, features });
   });
-
-  world.launchXR({ sessionMode: mode, features });
 }
 
 export function switchToVR(
@@ -128,10 +195,13 @@ export function switchToAR(
 }
 
 export function exitSession(world: World): void {
-  if (world.visibilityState.value !== VisibilityState.NonImmersive) {
+  launchGeneration += 1;
+  pendingMode = null;
+  currentMode = "browser";
+
+  if (world.session) {
     world.exitXR();
   }
-  currentMode = "browser";
 }
 
 export function syncPlaygroundModeFromWorld(world: World): void {
