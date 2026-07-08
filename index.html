@@ -31,36 +31,76 @@
         left: 50%;
         transform: translateX(-50%);
         z-index: 1000;
-        width: 44px;
-        height: 44px;
+        width: 56px;
+        height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 0;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 12px;
-        background: rgba(24, 24, 27, 0.88);
-        color: #fafafa;
+        border: none;
+        background: transparent;
         cursor: pointer;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      #xr-toggle:active .xr-toggle-thumb {
+        width: 28px;
+      }
+
+      #xr-toggle[data-state="immersive"]:active .xr-toggle-thumb {
+        transform: translateX(20px);
+      }
+
+      .xr-toggle-track {
+        position: relative;
+        width: 56px;
+        height: 32px;
+        border-radius: 999px;
+        background: #d4d4d8;
+        transition: background 0.22s ease;
+      }
+
+      #xr-toggle[data-state="immersive"] .xr-toggle-track {
+        background: #2563eb;
+      }
+
+      .xr-toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
         transition:
-          background 0.15s ease,
-          transform 0.1s ease;
+          transform 0.22s ease,
+          width 0.15s ease;
       }
 
-      #xr-toggle:hover {
-        background: rgba(39, 39, 42, 0.95);
+      #xr-toggle[data-state="immersive"] .xr-toggle-thumb {
+        transform: translateX(24px);
       }
 
-      #xr-toggle:active {
-        transform: translateX(-50%) scale(0.96);
-      }
-
-      #xr-toggle svg {
-        display: block;
+      .xr-toggle-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #71717a;
         pointer-events: none;
+      }
+
+      #xr-toggle[data-state="immersive"] .xr-toggle-icon {
+        color: #2563eb;
+      }
+
+      .xr-toggle-icon svg {
+        display: block;
+        width: 15px;
+        height: 15px;
       }
     </style>
   </head>

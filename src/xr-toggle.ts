@@ -26,9 +26,17 @@ import { resetSpherePosition } from "./sphere.js";
 
 const TOGGLE_CONFIG = "./ui/xr-toggle.json";
 
-const GLOBE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`;
+const GLOBE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`;
 
-const GLOBE_OFF_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.114 4.462A14.5 14.5 0 0 1 12 2a10 10 0 0 1 9.313 13.643"/><path d="M15.557 15.556A14.5 14.5 0 0 1 12 22 10 10 0 0 1 4.929 4.929"/><path d="M15.892 10.234A14.5 14.5 0 0 0 12 2a10 10 0 0 0-3.643.687"/><path d="M17.656 12H22"/><path d="M19.071 19.071A10 10 0 0 1 12 22 14.5 14.5 0 0 1 8.44 8.45"/><path d="M2 12h10"/><path d="m2 2 20 20"/></svg>`;
+const GLOBE_OFF_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.114 4.462A14.5 14.5 0 0 1 12 2a10 10 0 0 1 9.313 13.643"/><path d="M15.557 15.556A14.5 14.5 0 0 1 12 22 10 10 0 0 1 4.929 4.929"/><path d="M15.892 10.234A14.5 14.5 0 0 0 12 2a10 10 0 0 0-3.643.687"/><path d="M17.656 12H22"/><path d="M19.071 19.071A10 10 0 0 1 12 22 14.5 14.5 0 0 1 8.44 8.45"/><path d="M2 12h10"/><path d="m2 2 20 20"/></svg>`;
+
+const TOGGLE_MARKUP = `
+  <span class="xr-toggle-track">
+    <span class="xr-toggle-thumb">
+      <span class="xr-toggle-icon"></span>
+    </span>
+  </span>
+`;
 
 function isLocalDevHost(): boolean {
   const host = location.hostname;
@@ -54,8 +62,11 @@ function createDomToggle(world: World): HTMLButtonElement {
   const button = document.createElement("button");
   button.id = "xr-toggle";
   button.type = "button";
+  button.role = "switch";
   button.setAttribute("aria-label", "Enter XR");
-  button.innerHTML = GLOBE_ICON;
+  button.setAttribute("aria-checked", "false");
+  button.dataset.state = "browser";
+  button.innerHTML = TOGGLE_MARKUP;
 
   button.addEventListener("click", () => {
     const immersive =
@@ -89,10 +100,15 @@ function updateDomToggle(
 ): void {
   const immersive =
     world.visibilityState.value !== VisibilityState.NonImmersive;
+  const icon = button.querySelector(".xr-toggle-icon");
 
-  button.innerHTML = immersive ? GLOBE_OFF_ICON : GLOBE_ICON;
-  button.setAttribute("aria-label", immersive ? "Exit XR" : "Enter XR");
+  if (icon) {
+    icon.innerHTML = immersive ? GLOBE_OFF_ICON : GLOBE_ICON;
+  }
+
   button.dataset.state = immersive ? "immersive" : "browser";
+  button.setAttribute("aria-checked", immersive ? "true" : "false");
+  button.setAttribute("aria-label", immersive ? "Exit XR" : "Enter XR");
 }
 
 export class XrToggleSystem extends createSystem({
