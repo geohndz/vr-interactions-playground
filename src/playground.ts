@@ -18,6 +18,7 @@ import {
   SphereFeedbackSystem,
 } from "./sphere-feedback.js";
 import { SphereLab, createSphereLab } from "./sphere.js";
+import { playgroundRefs } from "./playground-context.js";
 import { syncPlaygroundModeFromWorld } from "./session-mode.js";
 
 export function createVrFloor(world: World): Entity {
@@ -48,13 +49,13 @@ export function bootstrapPlayground(world: World): void {
   const sphereEntity = createSphereLab(world);
   const panelEntity = createControlsPanel(world);
 
-  const controlsPanelSystem = new ControlsPanelSystem();
-  controlsPanelSystem.configure({ floorEntity, sphereEntity });
+  playgroundRefs.floorEntity = floorEntity;
+  playgroundRefs.sphereEntity = sphereEntity;
 
   world.registerComponent(SphereLab);
   world
     .registerSystem(SphereFeedbackSystem)
-    .registerSystem(controlsPanelSystem);
+    .registerSystem(ControlsPanelSystem);
 
   world.visibilityState.subscribe(() => {
     syncPlaygroundModeFromWorld(world);

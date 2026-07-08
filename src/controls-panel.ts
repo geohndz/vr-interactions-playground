@@ -14,6 +14,7 @@ import {
   eq,
 } from "@iwsdk/core";
 
+import { playgroundRefs } from "./playground-context.js";
 import {
   exitSession,
   getModeLabel,
@@ -44,9 +45,7 @@ function configureButton(
     pointerEventsOrder: 10,
   });
 
-  const activate = () => onActivate();
-  element.addEventListener("click", activate);
-  element.addEventListener("pointerup", activate);
+  element.addEventListener("click", onActivate);
 }
 
 export class ControlsPanelSystem extends createSystem({
@@ -55,19 +54,9 @@ export class ControlsPanelSystem extends createSystem({
     where: [eq(PanelUI, "config", PANEL_CONFIG)],
   },
 }) {
-  private floorEntity?: Entity;
-  private sphereEntity?: Entity;
   private panelEntity?: Entity;
   private modeStatus?: UIKit.Text;
   private interactionStatus?: UIKit.Text;
-
-  configure(options: {
-    floorEntity?: Entity;
-    sphereEntity?: Entity;
-  }): void {
-    this.floorEntity = options.floorEntity;
-    this.sphereEntity = options.sphereEntity;
-  }
 
   init() {
     this.queries.controlsPanel.subscribe("qualify", (entity) => {
@@ -122,13 +111,13 @@ export class ControlsPanelSystem extends createSystem({
         () => {
           exitSession(this.world);
           this.removePanelAnchor();
-          syncEnvironmentForMode(this.world, this.floorEntity);
+          syncEnvironmentForMode(this.world, playgroundRefs.floorEntity);
           this.updateStatusLabels();
         },
       );
 
       this.world.visibilityState.subscribe(() => {
-        syncEnvironmentForMode(this.world, this.floorEntity);
+        syncEnvironmentForMode(this.world, playgroundRefs.floorEntity);
         this.updateStatusLabels();
       });
     });
@@ -140,14 +129,14 @@ export class ControlsPanelSystem extends createSystem({
 
   private onSessionEntered(mode: SessionMode): void {
     if (mode === SessionMode.ImmersiveAR) {
-      if (this.sphereEntity) {
-        resetSpherePosition(this.sphereEntity);
+      if (playgroundRefs.sphereEntity) {
+        resetSpherePosition(playgroundRefs.sphereEntity);
       }
       this.addPanelAnchor();
     } else {
       this.removePanelAnchor();
     }
-    syncEnvironmentForMode(this.world, this.floorEntity);
+    syncEnvironmentForMode(this.world, playgroundRefs.floorEntity);
     this.updateStatusLabels();
   }
 
