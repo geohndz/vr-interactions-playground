@@ -11,16 +11,16 @@ import {
   World,
 } from "@iwsdk/core";
 
-import {
-  ControlsPanelSystem,
-  createControlsPanel,
-} from "./controls-panel.js";
+import { playgroundRefs } from "./playground-context.js";
 import {
   SphereFeedbackSystem,
 } from "./sphere-feedback.js";
 import { SphereLab, createSphereLab } from "./sphere.js";
-import { playgroundRefs } from "./playground-context.js";
-import { syncPlaygroundModeFromWorld } from "./session-mode.js";
+import {
+  syncEnvironmentForMode,
+  syncPlaygroundModeFromWorld,
+} from "./session-mode.js";
+import { XrToggleSystem, createXrToggle } from "./xr-toggle.js";
 
 export function createVrFloor(world: World): Entity {
   const floor = new Mesh(
@@ -48,7 +48,7 @@ export function bootstrapPlayground(world: World): void {
 
   const floorEntity = createVrFloor(world);
   const sphereEntity = createSphereLab(world);
-  const panelEntity = createControlsPanel(world);
+  createXrToggle(world);
 
   playgroundRefs.floorEntity = floorEntity;
   playgroundRefs.sphereEntity = sphereEntity;
@@ -56,7 +56,7 @@ export function bootstrapPlayground(world: World): void {
   world.registerComponent(SphereLab);
   world
     .registerSystem(SphereFeedbackSystem)
-    .registerSystem(ControlsPanelSystem);
+    .registerSystem(XrToggleSystem);
 
   world.visibilityState.subscribe((state) => {
     syncPlaygroundModeFromWorld(world);
@@ -66,7 +66,4 @@ export function bootstrapPlayground(world: World): void {
   });
 
   world.camera.position.set(0, 1.6, 0.5);
-
-  // Default to non-immersive browser view; panel is screen-space until XR starts.
-  panelEntity.object3D!.visible = true;
 }

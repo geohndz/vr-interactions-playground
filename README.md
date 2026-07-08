@@ -2,7 +2,7 @@
 
 A minimal [Immersive Web SDK (IWSDK)](https://iwsdk.dev/) playground for testing WebXR interactions across phone, desktop, and headset before implementing them in production apps.
 
-The first experiment is a **grabbable sphere visualizer** with one-hand, two-hand, and distance grab support, plus hover/press/grab visual feedback and an anchored controls panel.
+The first experiment is a **grabbable sphere visualizer** with two-hand grab support, plus hover/press/grab visual feedback and a floating XR toggle.
 
 ## Requirements
 
@@ -32,34 +32,31 @@ npm run dev:status
 
 ### Sphere interactions
 
-- **One-hand grab**: grip controller or hand pinch, then move/rotate
 - **Two-hand grab**: use both hands/controllers to scale and rotate
-- **Distance grab**: point with the ray pointer and pull the trigger
 - **Visual feedback**: blue (idle) → cyan (hover) → orange (pressed/grabbed)
 
-### Controls panel
+### XR toggle
 
-The panel explains input mappings and exposes session buttons:
+A minimal floating toggle at the top of the screen:
 
-- **Enter VR** — immersive VR (locomotion floor enabled)
-- **Enter AR** — passthrough AR with anchored panel
-- **Exit XR** — return to browser view
+- **Globe icon** — enter XR (AR when supported, otherwise VR)
+- **Globe-off icon** — exit XR and return to browser view
 
-In AR, the panel is anchored in real space via `XRAnchor`.
+In XR, the toggle follows your head so it stays reachable at the top of your view.
 
 ## Cross-device testing
 
 | Device | URL | What to verify |
 |--------|-----|----------------|
-| Desktop | `https://localhost:8081` | IWER emulation, pointer hover on sphere, Enter VR |
-| Phone (Android Chrome) | `https://<computer-ip>:8081` | Tap sphere in browser, Enter AR, pinch/grab |
+| Desktop | `https://localhost:8081` | IWER emulation, pointer hover on sphere, globe toggle |
+| Phone (Android Chrome) | `https://<computer-ip>:8081` | Tap sphere in browser, globe toggle for AR |
 | Quest headset | Network URL or ADB forward | VR + AR passthrough, controller and hand grab |
 
 ### Desktop (IWER)
 
 1. Open the **local** HTTPS URL
 2. Accept the self-signed certificate warning
-3. Use the controls panel or click **Enter VR**
+3. Use the globe toggle or IWER to enter VR
 4. IWER activates on localhost automatically
 
 ### Phone
@@ -68,7 +65,7 @@ In AR, the panel is anchored in real space via `XRAnchor`.
 2. Open the **network** HTTPS URL on the phone
 3. Accept the certificate warning
 4. Tap the sphere to confirm pointer feedback
-5. Tap **Enter AR** to test room-scale interaction
+5. Tap the globe toggle to enter AR
 
 ### Headset (Quest)
 
@@ -76,7 +73,7 @@ In AR, the panel is anchored in real space via `XRAnchor`.
 
 1. Open the network URL in the Quest browser
 2. Accept the certificate warning
-3. Test VR and AR from the controls panel
+3. Test VR and AR from the globe toggle
 
 **Method 2 — ADB port forwarding**
 
@@ -101,10 +98,10 @@ src/
   playground.ts       # Scene setup, floor, systems
   sphere.ts           # Grabbable sphere entity
   sphere-feedback.ts  # Hover/press/grab visuals
-  controls-panel.ts   # Spatial UI + session buttons
+  xr-toggle.ts        # Floating XR enter/exit toggle
   session-mode.ts     # AR/VR switching helpers
 ui/
-  controls-panel.uikitml
+  xr-toggle.uikitml
 ```
 
 ## References

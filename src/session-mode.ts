@@ -194,6 +194,36 @@ export function switchToAR(
   });
 }
 
+export function enterMXR(
+  world: World,
+  options?: { onEnter?: (mode: SessionMode) => void },
+): void {
+  void (async () => {
+    const preferAR =
+      navigator.xr &&
+      (await navigator.xr.isSessionSupported(SessionMode.ImmersiveAR));
+
+    if (preferAR) {
+      await launchWhenReady(
+        world,
+        SessionMode.ImmersiveAR,
+        AR_FEATURES,
+        () => options?.onEnter?.(SessionMode.ImmersiveAR),
+      );
+      return;
+    }
+
+    await launchWhenReady(
+      world,
+      SessionMode.ImmersiveVR,
+      VR_FEATURES,
+      () => options?.onEnter?.(SessionMode.ImmersiveVR),
+    );
+  })().catch((error) => {
+    console.error("[Playground] Failed to enter XR:", error);
+  });
+}
+
 export function exitSession(world: World): void {
   launchGeneration += 1;
   pendingMode = null;
